@@ -4,3 +4,8 @@
     margin: 15px 0 0;
     padding: 0;
 }
+
+.auth__signup-link:hover {
+    opacity: 0.85;
+    cursor: pointer;
+}

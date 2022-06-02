@@ -21,3 +21,8 @@
     }
 
 }
+
+.auth__btn-submit:hover {
+    opacity: 0.85;
+    cursor: pointer;
+}

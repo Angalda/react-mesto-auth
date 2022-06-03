@@ -27,7 +27,7 @@ function App() {
     const [cards, setCards] = useState([]);
     const history = useHistory();
     const [email, setEmail] = useState('')
-    const [isLoggedIn, setIsLoggedIn] = useState(true); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false); 
     const [isAuthOk, setIsAuthOk] = useState(false); 
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 

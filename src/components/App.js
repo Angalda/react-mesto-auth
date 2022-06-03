@@ -10,14 +10,13 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import DeleteCardPopup from './DeleteCardPopup';
-import ProtectedRoute from "./ProtectedRoute"; 
+import ProtectedRoute from "./ProtectedRoute";
 import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import * as auth from "../utils/auth";
 
 function App() {
-
     const [isEditProfile, setIsEditProfile] = useState(false);
     const [isAddPlace, setIsAddPlace] = useState(false);
     const [isEditAvatar, setIsEditAvatar] = useState(false);
@@ -26,16 +25,13 @@ function App() {
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
-
     const history = useHistory();
     const [email, setEmail] = useState('')
-    
-    const [isLoggedIn, setIsLoggedIn] = useState(true); //статус пользователя автоизирван или нет
-    const [isAuthOk, setIsAuthOk] = useState(false); // успешна ли авторизация
-    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false); //попап
+    const [isLoggedIn, setIsLoggedIn] = useState(true); 
+    const [isAuthOk, setIsAuthOk] = useState(false); 
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 
     useEffect(() => {
-        
         if (isLoggedIn) {
             Promise.all([api.getProfile(), api.getCardInfo()])
                 .then(
@@ -44,7 +40,6 @@ function App() {
                         setCards(cardList);
                     })
                 .catch((err) => console.log(err))
-                
         }
 
     }, [isLoggedIn]);
@@ -69,7 +64,6 @@ function App() {
                 handleClosePopup();
             })
             .catch((err) => console.log(err));
-
     }
 
     function handleEditProfileClick() {
@@ -108,7 +102,6 @@ function App() {
             .then((res) => {
                 setCurrentUser(res);
                 handleClosePopup();
-
             })
             .catch((err) => console.log(err))
     }
@@ -118,7 +111,6 @@ function App() {
             .then((res) => {
                 setCurrentUser(res);
                 handleClosePopup();
-
             })
             .catch((err) => console.log(err))
     }
@@ -132,24 +124,22 @@ function App() {
             .catch((err) => console.log(err))
     }
 
-
-
-    function handleRegisterSubmit(password, email) {
+//Регистрация и авторизация
+    function handleRegister(password, email) {
         return auth.register(password, email)
             .then((res) => {
-                setIsInfoTooltipOpen(true);
                 setIsAuthOk(true);
+                setIsInfoTooltipOpen(true);
                 history.push("/sign-in");
             })
             .catch((err) => {
                 if (err.status === 400) { console.log("400: не передано одно из полей"); }
-                setIsInfoTooltipOpen(true);
                 setIsAuthOk(false);
-
+                setIsInfoTooltipOpen(true);
             });
     }
 
-    function handleLoginSubmit(password, email) {
+    function handleLogin(password, email) {
         return auth.login(password, email)
             .then((res) => {
                 localStorage.setItem("jwt", res.token);
@@ -161,8 +151,8 @@ function App() {
                 if (err.status === 400) {
                     console.log("400: не передано одно из полей");
                 } else if (err.status === 401) { console.log("400: пользователь с email не найден") }
-                setIsInfoTooltipOpen(true);
                 setIsAuthOk(false);
+                setIsInfoTooltipOpen(true);
             });
     }
 
@@ -172,7 +162,7 @@ function App() {
         history.push("/sign-in");
     }
 
-   useEffect(() => {
+    useEffect(() => {
 
         const jwt = localStorage.getItem("jwt");
         if (jwt) {
@@ -188,24 +178,20 @@ function App() {
                     if (err === 400) { console.log("Токен не передан или передан не в том формате") }
                     else if (err === 401) { console.log("Переданный токен некорректен ") }
                 })
-       
         }
-        
-
     }, [history])
 
     return (
         <CurrentUserContext.Provider value={currentUser}>
 
             <div className="page">
-                <Header email={email} onGetOut={handleGetOut} isLoggedIn={isLoggedIn}/>
+                <Header email={email} onGetOut={handleGetOut} isLoggedIn={isLoggedIn} />
 
                 <Switch>
                     <ProtectedRoute
                         exact path="/"
                         component={Main}
                         isLoggedIn={isLoggedIn}
-                        
                         onEditAvatar={handleEditAvatarClick}
                         onEditPofile={handleEditProfileClick}
                         onNewPlace={handleAddPlaceClick}
@@ -214,17 +200,17 @@ function App() {
                         onCardLike={handleCardLike}
                         onCardDelete={handleDeleteClick}
                     />
-                    
+
                     <Route path="/sign-up">
-                        <Register onRegister={handleRegisterSubmit}/>
+                        <Register onRegister={handleRegister} />
                     </Route>
 
                     <Route path="/sign-in">
-                        <Login onLogin={handleLoginSubmit}/>
+                        <Login onLogin={handleLogin} />
                     </Route>
 
                     <Route>
-                        {isLoggedIn ? <Redirect to="/"/> : <Redirect to="sign-in"/>}
+                        {isLoggedIn ? <Redirect to="/" /> : <Redirect to="sign-in" />}
                     </Route>
                 </Switch>
 

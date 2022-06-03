@@ -16,6 +16,7 @@ function Main({
 
   return (
     <main className="main">
+      
       {/* ___________________profile__________________________*/}
       <section className="profile">
         <div className="profile__contain">

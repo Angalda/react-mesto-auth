@@ -77,6 +77,10 @@ code {
 @import url("./blocks/pop-up/__container-tooltip/pop-up__container-tooltip.css");
 @import url("./blocks/pop-up/__tooltip/_text/pop-up__tooltip_text.css");
 @import url("./blocks/header/__link/header__link.css");
+@import url("./blocks/header/__email/header__email.css");
+@import url("./blocks/header/__user-info/header__user-info.css");
+@import url("./blocks/profile/_hidden/profile_hidden.css");
+
 
 
 

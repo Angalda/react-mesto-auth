@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 
 function Register(props) {
@@ -55,4 +55,4 @@ function Register(props) {
   );
 }
 
-export default Register;
+export default withRouter(Register);

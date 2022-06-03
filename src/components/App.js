@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Route, Switch, Redirect, useHistory, Link, withRouter } from 'react-router-dom';
 import { api } from "../utils/api";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import Header from './Header';
@@ -16,9 +16,6 @@ import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import * as auth from "../utils/auth";
 
-
-
-
 function App() {
 
     const [isEditProfile, setIsEditProfile] = useState(false);
@@ -29,35 +26,17 @@ function App() {
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
-    const history = useHistory();
-    const[email, setEmail] = useState('')
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false); //статус пользователя автоизирван или нет
-    const [isAuthOk, setIsAuthOk] = useState(true); // успешна ли авторизация
+    const history = useHistory();
+    const [email, setEmail] = useState('')
+    
+    const [isLoggedIn, setIsLoggedIn] = useState(true); //статус пользователя автоизирван или нет
+    const [isAuthOk, setIsAuthOk] = useState(false); // успешна ли авторизация
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false); //попап
 
-    function checkToken(){
-        const jwt = localStorage.getItem("jwt");
-        if(jwt) {
-            auth.checkToken(jwt)
-            .then((data)=>{
-                if(data){
-                    setIsLoggedIn(true);
-                    history.push("/");
-                    setEmail(data.data.email);
-                }
-            })
-            .catch((err) => {
-                if (err === 400) {console.log("Токен не передан или передан не в том формате")}
-                else if (err === 401) {console.log("Переданный токен некорректен ")}
-            })
-        }
-    }
-
-    React.useEffect(() => {
-        checkToken();
+    useEffect(() => {
+        
         if (isLoggedIn) {
-
             Promise.all([api.getProfile(), api.getCardInfo()])
                 .then(
                     ([userData, cardList]) => {
@@ -65,6 +44,7 @@ function App() {
                         setCards(cardList);
                     })
                 .catch((err) => console.log(err))
+                
         }
 
     }, [isLoggedIn]);
@@ -152,8 +132,10 @@ function App() {
             .catch((err) => console.log(err))
     }
 
+
+
     function handleRegisterSubmit(password, email) {
-        auth.register(password, email)
+        return auth.register(password, email)
             .then((res) => {
                 setIsInfoTooltipOpen(true);
                 setIsAuthOk(true);
@@ -168,7 +150,7 @@ function App() {
     }
 
     function handleLoginSubmit(password, email) {
-        auth.login(password, email)
+        return auth.login(password, email)
             .then((res) => {
                 localStorage.setItem("jwt", res.token);
                 setIsLoggedIn(true);
@@ -190,6 +172,28 @@ function App() {
         history.push("/sign-in");
     }
 
+   useEffect(() => {
+
+        const jwt = localStorage.getItem("jwt");
+        if (jwt) {
+            auth.checkToken(jwt)
+                .then((res) => {
+                    if (res) {
+                        setIsLoggedIn(true);
+                        history.push("/");
+                        setEmail(res.data.email);
+                    }
+                })
+                .catch((err) => {
+                    if (err === 400) { console.log("Токен не передан или передан не в том формате") }
+                    else if (err === 401) { console.log("Переданный токен некорректен ") }
+                })
+       
+        }
+        
+
+    }, [history])
+
     return (
         <CurrentUserContext.Provider value={currentUser}>
 
@@ -197,18 +201,20 @@ function App() {
                 <Header email={email} onGetOut={handleGetOut} isLoggedIn={isLoggedIn}/>
 
                 <Switch>
-                    <ProtectedRoute exact path="/" isLoggedIn={isLoggedIn}>
-                        <Main
-                            onEditAvatar={handleEditAvatarClick}
-                            onEditPofile={handleEditProfileClick}
-                            onNewPlace={handleAddPlaceClick}
-                            onView={handleImgClick}
-                            cards={cards}
-                            onCardLike={handleCardLike}
-                            onCardDelete={handleDeleteClick}
-                        />
-                    </ProtectedRoute> 
-
+                    <ProtectedRoute
+                        exact path="/"
+                        component={Main}
+                        isLoggedIn={isLoggedIn}
+                        
+                        onEditAvatar={handleEditAvatarClick}
+                        onEditPofile={handleEditProfileClick}
+                        onNewPlace={handleAddPlaceClick}
+                        onView={handleImgClick}
+                        cards={cards}
+                        onCardLike={handleCardLike}
+                        onCardDelete={handleDeleteClick}
+                    />
+                    
                     <Route path="/sign-up">
                         <Register onRegister={handleRegisterSubmit}/>
                     </Route>

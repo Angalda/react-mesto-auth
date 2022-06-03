@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, withRouter } from "react-router-dom";
 
 
 function Login(props) {
@@ -51,4 +52,4 @@ function Login(props) {
     );
 }
 
-export default Login;
+export default withRouter(Login);
